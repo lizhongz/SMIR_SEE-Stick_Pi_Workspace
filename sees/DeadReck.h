@@ -38,6 +38,14 @@ public:
 		NavPAV *pPAV	// Updated pav for returning
 	); 
 
+	// Suppose object is moving in a plane
+	void operate_plane(
+		double vel, 	// Raw velocity from wheel encoder, unit meters/second
+		double angRate, // Angular rate from gyro, unit radians/second
+		double tItvl,   // Time interval between two sampling, unit seconds
+		NavPAV *pPAV	// Updated pav for returning
+	);
+
 private:
 	void update_azimuth(double angRate, double tItvl);
 	void update_velocity(double vel);

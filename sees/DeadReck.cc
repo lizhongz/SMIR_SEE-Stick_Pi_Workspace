@@ -41,6 +41,7 @@ void DeadReck::operate(double vel, double angRate, double tItvl, NavPAV *pPAV)
 	pPAV->lat = pav.lat;
 	pPAV->lon = pav.lon;	
 	pPAV->azim = pav.azim;	
+	pPAV->vel = pav.vel;
 	pPAV->vel_n = pav.vel_n;	
 	pPAV->vel_e = pav.vel_e;	
 }
@@ -61,6 +62,7 @@ void DeadReck::update_azimuth(double angRate, double tItvl)
 
 void DeadReck::update_velocity(double vel)
 {
+	pav.vel	= vel;
 	pav.vel_e = vel * sin(pav.azim);	
 	pav.vel_n = vel * cos(pav.azim);
 }
@@ -83,5 +85,21 @@ void DeadReck::update_position(double tItvl)
 	pav.lon = pav.lon + lonRate * tItvl;
 }
 
+void DeadReck::operate_plane(double vel, double angRate, double tItvl, NavPAV *pPAV)
+{
+	pav.azim = pav.azim - angRate * tItvl;		
+	pav.vel = vel; 
+	pav.vel_e = vel * sin(pav.azim);	
+	pav.vel_n = vel * cos(pav.azim);
+	pav.lat = pav.lat + pav.vel_n * tItvl;
+	pav.lon = pav.lon + pav.vel_e * tItvl;
+
+	pPAV->lat = pav.lat;
+	pPAV->lon = pav.lon;	
+	pPAV->azim = pav.azim;	
+	pPAV->vel = vel;
+	pPAV->vel_n = pav.vel_n;	
+	pPAV->vel_e = pav.vel_e;	
+}
 
 

@@ -72,3 +72,20 @@ int gps_dev_read_rmc(char *msg, int size)
 
 	return cnt;
 }
+
+int gps_dev_read_gga(char *msg, int size)
+{
+	int cnt;
+	char msgType[6] = "";
+
+	while(strcmp(msgType, "GPGGA") != 0)
+	{
+		if((cnt = gps_dev_read(msg, size)) == -1)
+			return -1; // read error
+		
+		strncpy(msgType, msg, 5);	
+		msgType[5] = '\0';
+	}
+
+	return cnt;
+}

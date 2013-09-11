@@ -8,6 +8,7 @@ typedef struct
 	double lat;	// latitude
 	double lon;	// longitude
 	double azim;	// azimuth
+	double vel;	// velocity
 	double vel_e;	// velocity of east component
 	double vel_n;	// velocity of nouth component
 }NavPAV; // Position, velocity and azimuth information

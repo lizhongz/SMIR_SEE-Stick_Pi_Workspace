@@ -16,4 +16,6 @@ int gps_dev_read(char *msg, int size);
 
 int gps_dev_read_rmc(char *msg, int size);
 
+int gps_dev_read_gga(char *msg, int size);
+
 #endif

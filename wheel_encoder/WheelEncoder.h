@@ -3,8 +3,8 @@
 
 #include <math.h>
 
-#define WH_CPR		150.0	// The number of window and bar pair per revolution
-#define WH_RADIUS	10.0	// Unit: millimeter 
+#define WH_CPR		811.0	// The number of window and bar pair per revolution
+#define WH_RADIUS	194	// Unit: millimeter 
 #define WH_CIRCUM	(2 * M_PI * WH_RADIUS)	// Circumference of wheel
 
 #define WH_DEV_NAME	"/dev/encoder" // Device name

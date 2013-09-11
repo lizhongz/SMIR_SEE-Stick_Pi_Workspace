@@ -42,8 +42,8 @@ volatile unsigned *gpio;
 #define GPIO_SET	*(gpio+7)  // sets   bits which are 1 ignores bits which are 0
 #define GPIO_CLR	*(gpio+10) // clears bits which are 1 ignores bits which are 0
 
-#define GPIO_EN_CH_A	4 
-#define GPIO_EN_CH_B	17
+#define GPIO_EN_CH_A	9 
+#define GPIO_EN_CH_B	10
 #define EN_STATE	(GPIO_READ(GPIO_EN_CH_A) + GPIO_READ(GPIO_EN_CH_B) * 2)
 
 void setup_io();

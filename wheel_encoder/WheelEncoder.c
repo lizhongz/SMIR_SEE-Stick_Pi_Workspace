@@ -2,6 +2,8 @@
 #include <stdio.h>
 #include <fcntl.h>
 #include <unistd.h>
+#include <time.h>
+#include <math.h>
 #include "WheelEncoder.h"
 
 #define SMPL_INTERVAL	1000000	// Sampling interval, unit: microsecond 
@@ -14,6 +16,12 @@ int main()
 	long curEnCnt;
 	double dis; // displacement, unit millimeter(mm)
 	double vel; // velosity, unit millimeter per second
+	double totalDis = 0; // Total distance
+	double dif;
+
+	struct timespec tp1;
+	struct timespec tp2;
+	double elapsedTime;	// second
 	
 	if(wh_open() != 0)
 	{
@@ -21,22 +29,36 @@ int main()
 		return -1;
 	}
 
+	clock_gettime(CLOCK_MONOTONIC, &tp1);
 	wh_get_count(&preEnCnt);
 
 	while(1)
 	{
 		usleep(SMPL_INTERVAL);
 
+		clock_gettime(CLOCK_MONOTONIC, &tp2);
 		wh_get_count(&curEnCnt);
-		//printf("preCnt: %d, curCnt: %d \n", preEnCnt, curEnCnt);
-		
-		// Calculate displacement and velosity
-		dis = WH_CIRCUM * ((curEnCnt - preEnCnt) / WH_CPR);
-		vel = dis / SMPL_INTERVAL * 1000000;
-	
-		preEnCnt = curEnCnt;
 
-		printf("s: %f mm, v: %f mm/s\n", dis, vel);
+		elapsedTime = tp2.tv_sec - tp1.tv_sec + (tp2.tv_nsec - tp1.tv_nsec) / 1000000000.0;
+
+		printf("preCnt: %d, curCnt: %d, dif: %d\n", preEnCnt, curEnCnt, curEnCnt - preEnCnt);
+		
+		dif = (curEnCnt - preEnCnt);
+		if(dif < 0)
+		{
+			dif = dif / 2;	
+
+		}
+		// Calculate displacement and velosity
+		dis = WH_CIRCUM * (dif / WH_CPR);
+		vel = dis / elapsedTime;
+		totalDis += dis;
+	
+		printf("s: %f mm, v: %f mm/s, total: %f m\n", dis, vel, totalDis / 1000);
+
+		preEnCnt = curEnCnt;
+		tp1.tv_sec = tp2.tv_sec;
+		tp1.tv_nsec = tp2.tv_nsec;
 	}
 
 	wh_close();		

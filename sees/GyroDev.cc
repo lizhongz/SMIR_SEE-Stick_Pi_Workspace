@@ -48,7 +48,7 @@ int gyro_dev_get_rate(double *pRate)
 		gyro_dev_fd, GYRO_OUT_Z_L_G | 0x80); 
 	// Convert the unit of angular rate from dight 
 	// to degrees per second
-	*pRate = (double)zAngRateRaw * GYRO_SENS / 1000;
+	*pRate = (double)zAngRateRaw * GYRO_SENS / 1000 - GYRO_ZERO_RATE;
 
 	return 0;
 }
