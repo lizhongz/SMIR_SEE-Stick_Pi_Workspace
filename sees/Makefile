@@ -1,8 +1,9 @@
 CC=g++-4.7 -std=c++11
-CFLAGS=
+#CC=g++
+CFLAGS=-g
 INFLAGS=-I./ 
-LDFLAGS=-lrt -lm -lpthread -lcurl
-SOURCES=main.cc DataIntegrator.cc DeadReck.cc Sampler.cc Runnable.cc NetComm.cc GPSMsgParser.cc DegRadConv.cc GeoEquations.cc GyroDev.cc GPSDevice.cc Uart.cc WheelEncoder.cc
+LDFLAGS=-lrt -lm -lcurl -lpthread
+SOURCES=main.cc DataIntegrator.cc DeadReck.cc Sampler.cc NetComm.cc Runnable.cc GPSMsgParser.cc DegRadConv.cc GeoEquations.cc GyroDev.cc GPSDevice.cc Uart.cc WheelEncoder.cc CompassDev.cc
 
 OBJECTS=$(SOURCES:.cc=.o)
 EXECUTABLE=run

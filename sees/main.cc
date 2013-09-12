@@ -17,10 +17,18 @@ int main()
 	Output2FILE::Stream() = logFile;
         FILELog::ReportingLevel() = FILELog::FromString("DEBUG1");
 	
-	dtIntr.initialize();
-	dtIntr.fuse();	
+	if(dtIntr.initialize() != 0)
+	{
+		cout << "Error:DataIntegrator initalization" << endl;
+		return -1;
+	}
 
-	netComm.run();
+	netComm.start();
+
+	if(dtIntr.fuse() != 0)
+	{
+		cout << "Error:Data fusion" << endl;
+	}	
 
 /*
 	// Test GPS sampling 

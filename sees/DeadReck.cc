@@ -58,6 +58,17 @@ void DeadReck::update_azimuth(double angRate, double tItvl)
 
 	// update azimuth
 	pav.azim = pav.azim - azimRate * tItvl;		
+
+	// pav.azim should between -2*Pi and 2*Pi
+	double pi2 = 2 * M_PI;
+	while(pav.azim < 0)
+	{
+		pav.azim += pi2;
+	}	
+	while(pav.azim > pi2)
+	{
+		pav.azim -= pi2;
+	}	
 }
 
 void DeadReck::update_velocity(double vel)

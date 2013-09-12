@@ -5,6 +5,7 @@
 #include "WheelEncoder.h"
 #include "GPSDevice.h"
 #include "GPSMsgParser.h"
+#include "CompassDev.h"
 
 Sampler::Sampler()
 {
@@ -19,23 +20,31 @@ Sampler::~Sampler()
 
 int Sampler::open_devices()
 {
-	if(gps_dev_open((char*)GPS_DEV_FILE_NAME) == -1)
+	/*if(gps_dev_open((char*)GPS_DEV_FILE_NAME) != 0)
 	{
 		printf("Open GPS error\n");
 		return -1;
 	}
+	*/
 
 	// Open gyroscope
-	if(gyro_dev_open((char*)I2C_DEV_FILE_NAME) == -1)
+	if(gyro_dev_open((char*)I2C_DEV_FILE_NAME) != 0)
 	{
 		printf("Open Gyroscope error\n");
 		return -1;
 	}
 
 	// Open encoder
-	if(wh_open((char*)WH_DEV_FILE_NAME) == -1)
+	if(wh_open((char*)WH_DEV_FILE_NAME) != 0)
 	{
 		printf("Open encoder error\n");
+		return -1;
+	}
+
+	// Open Compass
+	if(cmps_dev_open((char*)I2C_DEV_FILE_NAME) != 0)
+	{
+		printf("Open compass error\n");
 		return -1;
 	}
 
@@ -47,6 +56,7 @@ int Sampler::close_devices()
 	gps_dev_close();
 	gyro_dev_close();
 	wh_close();
+	cmps_dev_close();
 
 	return 0;
 }
@@ -151,5 +161,14 @@ int Sampler::get_gps_3d_pos(double *lat, double *lon, double *alt)
 	return 0;
 }
 
+int Sampler::get_cmps_azimuth(double *pAzim)
+{
+	if(cmps_dev_get_azimuth(pAzim) != 0)
+	{
+		printf("Sampling error: get compass' azimuth\n");	
+		return -1;
+	}
 
+	return 0;
+}
 

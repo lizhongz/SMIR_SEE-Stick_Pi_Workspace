@@ -36,9 +36,9 @@ int DataIntegrator::fuse()
 {
 	long	enPreCnt;
 	long	enCurCnt;
-	long	cntDif;
-	int 	distance;
-	int	velocity;
+	double	cntDif;
+	double 	distance;
+	double	velocity;
 	double	angRate;
 	double	lat;
 	double	lon;
@@ -52,21 +52,38 @@ int DataIntegrator::fuse()
 
 	int	res;
 
+	printf("Begin to fuse sensor data\n");
+
 	// Read initial encoder count
 	if(smpr.get_en_count(&enPreCnt) != 0)
 	{
+		cout << "DataIntegrator: fail to get encoder count" 
+			<< endl;
 		return -1;
 	}
 
 	// Obtain initial position
-	if(smpr.get_gps_3d_pos(&lat, &lon, &alt) != 0)
+	/*if(smpr.get_gps_3d_pos(&lat, &lon, &alt) != 0)
 	{
+		cout << "DataIntegrator: GPS data is not valid" << endl;
+		return -1;
+	}
+	*/
+	lat = deg2rad(lat);
+	lon = deg2rad(lon);
+
+	// Obtain intial azimuth
+	if(smpr.get_cmps_azimuth(&azim) != 0)
+	{
+		cout << "DataIntegrator: fail to get compass azimuth" 
+			<< endl;
 		return -1;
 	}
 	
 	// Initialize dead reckoning
-	ddrk.reset(lat, lon, alt, 0); // Geographic operation
+	//ddrk.reset(lat, lon, alt, azim); // Geographic operation
 	//ddrk.reset(0, 0, 0, 0); // For plane operation 
+	ddrk.reset(deg2rad(45.759148), deg2rad(3.110976), 412, azim); // For plane operation 
 
 	clock_gettime(CLOCK_MONOTONIC, &tp1);
 	
@@ -83,7 +100,7 @@ int DataIntegrator::fuse()
 			 (tp2.tv_nsec - tp1.tv_nsec) / 1000000000.0;
 
 		// Calculate velocity
-		cntDif = enCurCnt - enPreCnt;	
+		cntDif = (double)enCurCnt - enPreCnt;	
 		if(cntDif < 0)
 		{
 			cntDif = cntDif / 2;
@@ -106,9 +123,10 @@ int DataIntegrator::fuse()
 		//ddrk.operate_plane(velocity, angRate, elapsedTime, &(this->pav));
 
 		ddrk.operate(velocity, angRate, elapsedTime, &(this->drPav));	
+		//printf("lat: %.10f, lon: %.10f\n", rad2deg(drPav.lat), rad2deg(drPav.lon)); 
 		FILE_LOG(logINFO) << "[DR Data] " 
-			<< "lat: " << drPav.lat 
-			<< ", lon: " << drPav.lon 
+			<< "lat: " << rad2deg(drPav.lat)
+			<< ", lon: " << rad2deg(drPav.lon)
 			<< ", azi: " << rad2deg(drPav.azim)
 			<< ", veN: " << drPav.vel_n
 			<< ", veE: " << drPav.vel_e
@@ -121,6 +139,7 @@ int DataIntegrator::fuse()
 			// Calibration 
 	
 			// Obtain GPS data
+/*
 			res = smpr.get_gps_pav(&gpsPav.lat, &gpsPav.lon, 
 				&gpsPav.azim, &gpsPav.vel);				
 
@@ -136,6 +155,7 @@ int DataIntegrator::fuse()
 				
 				intvlCnt = 1;	
 			}
+*/
 		}
 
 		enPreCnt = enCurCnt;

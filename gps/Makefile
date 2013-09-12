@@ -1,5 +1,5 @@
 CC=gcc
-CFLAGS=
+CFLAGS=-g
 INFLAGS=-I./ 
 LDFLAGS=
 SOURCES=TestGPS.c Uart.c GPSDevice.c 

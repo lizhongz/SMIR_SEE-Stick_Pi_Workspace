@@ -3,8 +3,10 @@
 #include <curl/curl.h>
 #include <ctime>
 #include <iostream>
+#include <iomanip>
 #include <sstream>
 #include "NetComm.h"
+#include "DegRadConv.h"
 
 using namespace std;
 
@@ -28,6 +30,8 @@ NetComm::~NetComm()
 void NetComm::run()
 {
 	m_stop = false;
+
+	cout << "Networt communication Thread" << endl;
 
 	try
 	{
@@ -55,7 +59,8 @@ int NetComm::monitor()
 		//get_fused_pav(optmPav);
 
 		// Send track points to global server
-		send_track_point(&gpsPav, &drPav, NULL);
+		printf("Send track point\n");
+		send_track_point(NULL, &drPav, NULL);
 
 		sleep(1);
 	}
@@ -80,15 +85,19 @@ int NetComm::send_track_point(NavPAV *pGpsPav,
 	{
 		// Send GPS track point
 
-		url << GSERVER_URL_HEAD 
+		pGpsPav->lat = rad2deg(pGpsPav->lat);
+		pGpsPav->lon = rad2deg(pGpsPav->lon);
+		pGpsPav->azim = rad2deg(pGpsPav->azim);
+
+		url << GSERVER_URL_HEAD
 			<< "trackinsert?" 
-			<< "nav_id=" << 1 
+			<< "nav_id=" << 21 
 			<< "&trk_type=" << TRK_PNT_GPS_TYPE
 			<< "&trk_time=" << timeStrm.str()
-			<< "&trk_lat=" << pGpsPav->lat 
-			<< "&trk_long=" << pGpsPav->lon
+			<< "&trk_lat=" << setprecision(10) << pGpsPav->lat 
+			<< "&trk_long="<< setprecision(10) << pGpsPav->lon
 			<< "&trk_azimuth=" << pGpsPav->azim
-			<< "&trk_velocity=" << pGpsPav->vel;
+			<< "&trk_velocity=" << pGpsPav->vel; 
 
 		curl_easy_setopt(p_curl, CURLOPT_URL, url.str().c_str());		
 		res = curl_easy_perform(p_curl);
@@ -104,14 +113,18 @@ int NetComm::send_track_point(NavPAV *pGpsPav,
 	{
 		// Send DR track point
 
+		pDrPav->lat = rad2deg(pDrPav->lat);
+		pDrPav->lon = rad2deg(pDrPav->lon);
+		pDrPav->azim = rad2deg(pDrPav->azim);
+
 		url.str("");
 		url << GSERVER_URL_HEAD 
 			<< "trackinsert?" 
-			<< "nav_id=" << 1 
+			<< "nav_id=" << 21 
 			<< "&trk_type=" << TRK_PNT_DR_TYPE
 			<< "&trk_time=" << timeStrm.str()
-			<< "&trk_lat=" << pDrPav->lat 
-			<< "&trk_long=" << pDrPav->lon
+			<< "&trk_lat=" << setprecision(10) << pDrPav->lat 
+			<< "&trk_long="<< setprecision(10) << pDrPav->lon
 			<< "&trk_azimuth=" << pDrPav->azim
 			<< "&trk_velocity=" << pDrPav->vel;
 

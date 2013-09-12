@@ -35,6 +35,9 @@ public:
 	// Get latitude, longitude and altitude
 	// if data valid return 0, else return -1
 	int get_gps_3d_pos(double *lat, double *lon, double *alt);
+	
+	// Obtain azimuth in radian from compass
+	int get_cmps_azimuth(double *azim);
 };
 
 #endif // _SAMPLER_H_
