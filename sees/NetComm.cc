@@ -10,6 +10,8 @@
 
 using namespace std;
 
+#define NAV_ID 23
+
 size_t curl_callback(void *ptr, size_t size, size_t count, void *stream);
 
 NetComm::NetComm(DataIntegrator *pDtIntgr)
@@ -60,7 +62,7 @@ int NetComm::monitor()
 
 		// Send track points to global server
 		printf("Send track point\n");
-		send_track_point(NULL, &drPav, NULL);
+		send_track_point(&gpsPav, &drPav, NULL);
 
 		sleep(1);
 	}
@@ -91,7 +93,7 @@ int NetComm::send_track_point(NavPAV *pGpsPav,
 
 		url << GSERVER_URL_HEAD
 			<< "trackinsert?" 
-			<< "nav_id=" << 21 
+			<< "nav_id=" << NAV_ID 
 			<< "&trk_type=" << TRK_PNT_GPS_TYPE
 			<< "&trk_time=" << timeStrm.str()
 			<< "&trk_lat=" << setprecision(10) << pGpsPav->lat 
@@ -120,7 +122,7 @@ int NetComm::send_track_point(NavPAV *pGpsPav,
 		url.str("");
 		url << GSERVER_URL_HEAD 
 			<< "trackinsert?" 
-			<< "nav_id=" << 21 
+			<< "nav_id=" << NAV_ID 
 			<< "&trk_type=" << TRK_PNT_DR_TYPE
 			<< "&trk_time=" << timeStrm.str()
 			<< "&trk_lat=" << setprecision(10) << pDrPav->lat 

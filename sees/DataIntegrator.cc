@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <iostream>
 #include <cmath>
+#include <iomanip>
 #include "DataIntegrator.h"
 #include "DegRadConv.h"
 #include "log.h"
@@ -63,12 +64,12 @@ int DataIntegrator::fuse()
 	}
 
 	// Obtain initial position
-	/*if(smpr.get_gps_3d_pos(&lat, &lon, &alt) != 0)
+	if(smpr.get_gps_3d_pos(&lat, &lon, &alt) != 0)
 	{
 		cout << "DataIntegrator: GPS data is not valid" << endl;
 		return -1;
 	}
-	*/
+	
 	lat = deg2rad(lat);
 	lon = deg2rad(lon);
 
@@ -81,9 +82,12 @@ int DataIntegrator::fuse()
 	}
 	
 	// Initialize dead reckoning
-	//ddrk.reset(lat, lon, alt, azim); // Geographic operation
+	ddrk.reset(lat, lon, alt, azim); // Geographic operation
+	//ddrk.reset(lat, lon, alt, deg2rad(320)); // Geographic operation
 	//ddrk.reset(0, 0, 0, 0); // For plane operation 
-	ddrk.reset(deg2rad(45.759148), deg2rad(3.110976), 412, azim); // For plane operation 
+	//ddrk.reset(deg2rad(45.759148), deg2rad(3.110976), 412, azim); // ISIMA  Inside
+	//ddrk.reset(deg2rad(45.759618), deg2rad(3.111040), 412, deg2rad(335)); // ISIMA-Tram(Poli)
+	ddrk.reset(deg2rad(45.759804), deg2rad(3.110615), 412, deg2rad(67.5)); // ISIMA(Amphie)-Tram(Poli)
 
 	clock_gettime(CLOCK_MONOTONIC, &tp1);
 	
@@ -124,7 +128,7 @@ int DataIntegrator::fuse()
 
 		ddrk.operate(velocity, angRate, elapsedTime, &(this->drPav));	
 		//printf("lat: %.10f, lon: %.10f\n", rad2deg(drPav.lat), rad2deg(drPav.lon)); 
-		FILE_LOG(logINFO) << "[DR Data] " 
+		/*FILE_LOG(logINFO) << "[DR Data] " 
 			<< "lat: " << rad2deg(drPav.lat)
 			<< ", lon: " << rad2deg(drPav.lon)
 			<< ", azi: " << rad2deg(drPav.azim)
@@ -132,35 +136,52 @@ int DataIntegrator::fuse()
 			<< ", veE: " << drPav.vel_e
 			<< ", enCnt: " << enCurCnt - enPreCnt
 			<< ", vel: " << velocity
-			<< ", rate: " << rad2deg(angRate) << endl;
+			<< ", rate: " << rad2deg(angRate) << endl;*/
+		FILE_LOG(logINFO) << "[DR Data]" << setprecision(10) 
+			<< "," << velocity
+			<< "," << rad2deg(angRate)
+			<< "," << elapsedTime
+			<< "," << rad2deg(drPav.lat)
+			<< "," << rad2deg(drPav.lon)
+			<< "," << rad2deg(drPav.azim)
+			<< "," << drPav.vel_n
+			<< "," << drPav.vel_e << endl;
 
-		if(intvlCnt == CALI_INTERVAL)	
+		if(intvlCnt++ == CALI_INTERVAL)	
 		{
 			// Calibration 
 	
 			// Obtain GPS data
-/*
-			res = smpr.get_gps_pav(&gpsPav.lat, &gpsPav.lon, 
-				&gpsPav.azim, &gpsPav.vel);				
 
+			res = smpr.get_gps_pav(&lat, &lon, &azim, &velocity);				
 			if(res == 0) // If GPS data is valid
 			{
-				gpsPav.azim = deg2rad(gpsPav.azim);
+				gpsPav.lat = deg2rad(lat);
+				gpsPav.lon = deg2rad(lon);
+				gpsPav.azim = deg2rad(azim);
+				gpsPav.vel = velocity;
+				gpsPav.vel_e = velocity * sin(gpsPav.azim);
+				gpsPav.vel_n = velocity * cos(gpsPav.azim); 
                                 
-				FILE_LOG(logINFO) << "[GPS Data] " 
-					<< "lat: " << gpsPav.lat
-					<< ", lon: " << gpsPav.lon 
-					<< ", azi: " << rad2deg(gpsPav.azim)
-					<< ", vel: " << gpsPav.vel << endl; 
+				FILE_LOG(logINFO) << "[GPS Data]" << setprecision(10)
+					<< "," << rad2deg(gpsPav.lat)
+					<< "," << rad2deg(gpsPav.lon) 
+					<< "," << rad2deg(gpsPav.azim)
+					<< "," << gpsPav.vel 
+					<< "," << gpsPav.vel_n
+					<< "," << gpsPav.vel_e << endl;
 				
 				intvlCnt = 1;	
 			}
-*/
+			else
+			{
+				FILE_LOG(logINFO) << "[GPS Data],Invalid";
+			}
+
 		}
 
 		enPreCnt = enCurCnt;
 		tp1 = tp2;
-		intvlCnt += 1;
 	}
 }
 	

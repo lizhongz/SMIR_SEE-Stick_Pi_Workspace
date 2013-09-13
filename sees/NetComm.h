@@ -9,7 +9,7 @@
 
 #define	GSERVER_URL_HEAD "http://edss.isima.fr/sites/smir/sees/gate/"
 
-#define TRK_PNT_GPS_TYPE	2 
+#define TRK_PNT_GPS_TYPE	0 
 #define TRK_PNT_DR_TYPE		1 
 #define TRK_PNT_OPTM_TYPE	2 
 

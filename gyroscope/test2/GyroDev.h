@@ -12,7 +12,7 @@
 
 #define GYRO_SENS		70.0 	// sensitivity, unit: mdps per digit
 
-#define GYRO_ZERO_RATE		(-1.5)
+#define GYRO_ZERO_RATE		(0)
 
 int gyro_dev_open(char *devName);
 

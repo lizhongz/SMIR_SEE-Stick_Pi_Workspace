@@ -20,12 +20,12 @@ Sampler::~Sampler()
 
 int Sampler::open_devices()
 {
-	/*if(gps_dev_open((char*)GPS_DEV_FILE_NAME) != 0)
+	if(gps_dev_open((char*)GPS_DEV_FILE_NAME) != 0)
 	{
 		printf("Open GPS error\n");
 		return -1;
 	}
-	*/
+
 
 	// Open gyroscope
 	if(gyro_dev_open((char*)I2C_DEV_FILE_NAME) != 0)

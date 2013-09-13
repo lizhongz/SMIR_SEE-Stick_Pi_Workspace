@@ -25,7 +25,7 @@ int main()
 
 	clock_gettime(CLOCK_MONOTONIC, &tp1);
 
-	while(cnt < 10000)
+	while(cnt < 1000)
 	{
 
 		usleep(INTERVAL);	
