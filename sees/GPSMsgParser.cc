@@ -2,7 +2,7 @@
 #include <string>
 #include "GPSMsgParser.h"
 
-void GPSMsgParser::parse_rmc_msg(const string &rawMsg, RMC_data &rmcData)
+int GPSMsgParser::parse_rmc_msg(const string &rawMsg, RMC_data &rmcData)
 {
 	vector<string> splMsgs;
 	char delim = ',';
@@ -11,6 +11,10 @@ void GPSMsgParser::parse_rmc_msg(const string &rawMsg, RMC_data &rmcData)
 	split(rawMsg, delim, splMsgs);
 
 	// convert splitted raw message to RMC data
+	if(splMsgs[3].compare("") == 0)
+	{
+		return -1;
+	}
 
 	rmcData.utc	= splMsgs[1];	
 	rmcData.status	= (char)splMsgs[2][0];
@@ -21,15 +25,22 @@ void GPSMsgParser::parse_rmc_msg(const string &rawMsg, RMC_data &rmcData)
 
 	rmcData.vel	= atof(splMsgs[7].c_str()) * 0.514444; // knots to m/s
 	rmcData.azim	= atof(splMsgs[8].c_str());
+
+	return 0;
 }
 
-void GPSMsgParser::parse_gga_msg(const string &rawMsg, GGA_data &ggaData)
+int GPSMsgParser::parse_gga_msg(const string &rawMsg, GGA_data &ggaData)
 {
 	vector<string> splMsgs;
 	char delim = ',';
 
 	// Split raw message by ','
 	split(rawMsg, delim, splMsgs);
+
+	if(splMsgs[2].compare("") == 0)
+	{
+		return -1;
+	}
 
 	ggaData.utc	= splMsgs[1];	
 	ggaData.lat	= atof(splMsgs[2].c_str());
@@ -39,6 +50,8 @@ void GPSMsgParser::parse_gga_msg(const string &rawMsg, GGA_data &ggaData)
 
 	coor_format_convert(ggaData.lat, splMsgs[3][0], 
 		ggaData.lon, splMsgs[5][0]);
+
+	return 0;
 }
 
 void GPSMsgParser::split(const string &rawMsg, const char delim, vector<string> &splMsgs)
@@ -66,6 +79,10 @@ void GPSMsgParser::split(const string &rawMsg, const char delim, vector<string> 
 			{
 				splMsgs.push_back(tmpStr);
 				tmpStr.clear();
+			}
+			else
+			{
+				splMsgs.push_back("");
 			}
 		}
 	}

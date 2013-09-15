@@ -4,31 +4,37 @@
 #include "NetComm.h"
 #include "NavCommon.h"
 #include "log.h"
+#include "ObstDetection.h"
 
 using namespace std;
 
 int main()
 {
-	DataIntegrator dtIntr;
-	NetComm netComm(&dtIntr);
-
 	// Open log function
 	FILE *logFile = fopen("app.log", "w");
 	Output2FILE::Stream() = logFile;
         FILELog::ReportingLevel() = FILELog::FromString("DEBUG1");
-	
+
+	// Create data integration thread
+	DataIntegrator dtIntr;
 	if(dtIntr.initialize() != 0)
 	{
 		cout << "Error:DataIntegrator initalization" << endl;
 		return -1;
 	}
+	dtIntr.start();
 
+	// Start obstacle detection thread
+	ObstDetection obsDect(&dtIntr);
+	obsDect.start();
+
+	// Start remote monitoring thread
+/*
+	NetComm netComm(&dtIntr);
 	netComm.start();
+*/
 
-	if(dtIntr.fuse() != 0)
-	{
-		cout << "Error:Data fusion" << endl;
-	}	
+	while(1);
 
 /*
 	// Test GPS sampling 

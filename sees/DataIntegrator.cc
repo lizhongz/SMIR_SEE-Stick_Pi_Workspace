@@ -67,7 +67,7 @@ int DataIntegrator::fuse()
 	if(smpr.get_gps_3d_pos(&lat, &lon, &alt) != 0)
 	{
 		cout << "DataIntegrator: GPS data is not valid" << endl;
-		return -1;
+		//return -1;
 	}
 	
 	lat = deg2rad(lat);
@@ -200,5 +200,18 @@ void DataIntegrator::get_gps_pav(NavPAV &pav)
 	pav = this->gpsPav;
 }
 
+void DataIntegrator::run()
+{
+	m_stop = false;
 
+	cout << "Data integration thread" << endl;
+
+	try
+	{
+		fuse();
+	
+	} catch(int i) { /* ... */ }
+
+	m_stop = true;
+}
 

@@ -1,11 +1,15 @@
 #include <stdlib.h>
 #include <stdio.h>
+#include <string>
+#include <iostream>
 #include "Sampler.h"
 #include "GyroDev.h"
 #include "WheelEncoder.h"
 #include "GPSDevice.h"
 #include "GPSMsgParser.h"
 #include "CompassDev.h"
+
+using namespace std;
 
 Sampler::Sampler()
 {
@@ -110,13 +114,18 @@ int Sampler::get_gps_pav(double *lat, double *lon,
 	// Get RMC message from GPS
 	if(gps_dev_read_rmc(&msg[0], GPS_DEV_MSG_SIZE) == -1)
 	{
+		cout << "Sampler: Read RMC message error" << endl;
 		return -1;
 	}
 
-	printf("%s\n", msg);
+	//printf("%s\n", msg);
 
 	// Parser RMC message
-	parser.parse_rmc_msg(string(msg), rmcData);
+	if(parser.parse_rmc_msg(string(msg), rmcData) != 0)
+	{
+		cout << "Sampler: RMC messeage is not valid" << endl;
+		return -1;
+	}
 
 	*lat	= rmcData.lat;
 	*lon	= rmcData.lon;
@@ -125,6 +134,7 @@ int Sampler::get_gps_pav(double *lat, double *lon,
 
 	if(rmcData.status == 'V')
 	{
+		//cout << "Sampler: RMC messeage is not valid" << endl;
 		return -1;
 	}
 
@@ -140,13 +150,18 @@ int Sampler::get_gps_3d_pos(double *lat, double *lon, double *alt)
 	// Get RMC message from GPS
 	if(gps_dev_read_gga(&msg[0], GPS_DEV_MSG_SIZE) == -1)
 	{
+		cout << "Sampler: Read GGA message error" << endl;
 		return -1;
 	}
 
-	printf("%s\n", msg);
+	//printf("%s\n", msg);
 
 	// Parser RMC message
-	parser.parse_gga_msg(string(msg), ggaData);
+	if(parser.parse_gga_msg(string(msg), ggaData) != 0)
+	{
+		cout << "Sampler: GGA messeage is not valid" << endl;
+		return -1;
+	}
 
 	*lat = ggaData.lat;
 	*lon = ggaData.lon;
@@ -155,6 +170,7 @@ int Sampler::get_gps_3d_pos(double *lat, double *lon, double *alt)
 	// If satellite number < 4, dada is not valid
 	if(ggaData.sat_num < 4) 
 	{
+		//cout << "Sampler: GGA messeage is not valid" << endl;
 		return -1;
 	}
 
@@ -165,7 +181,7 @@ int Sampler::get_cmps_azimuth(double *pAzim)
 {
 	if(cmps_dev_get_azimuth(pAzim) != 0)
 	{
-		printf("Sampling error: get compass' azimuth\n");	
+		cout << "Sampling error: get compass' azimuth" << endl;	
 		return -1;
 	}
 

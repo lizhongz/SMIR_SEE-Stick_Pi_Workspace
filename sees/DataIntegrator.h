@@ -4,6 +4,7 @@
 #include "NavCommon.h"
 #include "Sampler.h"
 #include "DeadReck.h"
+#include "Runnable.h"
 
 #define SMP_INTERVAL	10000	// Sampling intervel, microsecond
 #define CALI_INTERVAL	10	// The calibration interval 
@@ -14,7 +15,7 @@
 #define WH_RADIUS	0.194	// Unit: meters
 #define WH_CIRCUM	(2 * M_PI * WH_RADIUS)	// Circumference of wheel
 
-class DataIntegrator
+class DataIntegrator : public Runnable
 {
 private:
 
@@ -30,6 +31,9 @@ public:
 	~DataIntegrator();
 
 	int initialize();
+
+	// Start data integration thread
+	void run();
 
 	int fuse(); // multiple sensor data
 	

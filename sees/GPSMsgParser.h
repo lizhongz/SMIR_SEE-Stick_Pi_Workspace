@@ -33,10 +33,10 @@ class GPSMsgParser
 public:
 	
 	// Parse RMC message
-	static void parse_rmc_msg(const string &rawMsg, RMC_data &rmcData);
+	static int parse_rmc_msg(const string &rawMsg, RMC_data &rmcData);
 
 	// Parse GGA message
-	static void parse_gga_msg(const string &rawMsg, GGA_data &ggaData);
+	static int parse_gga_msg(const string &rawMsg, GGA_data &ggaData);
 	
 private:
 
