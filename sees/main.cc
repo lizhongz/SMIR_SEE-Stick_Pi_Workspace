@@ -8,6 +8,10 @@
 
 using namespace std;
 
+#define EN_DATA_FUSION		1
+#define EN_OTACLE_DETEC		EN_DATA_FUSION
+#define EN_NET_COMM		0
+
 int main()
 {
 	// Open log function
@@ -15,6 +19,7 @@ int main()
 	Output2FILE::Stream() = logFile;
         FILELog::ReportingLevel() = FILELog::FromString("DEBUG1");
 
+#if EN_DATA_FUSION
 	// Create data integration thread
 	DataIntegrator dtIntr;
 	if(dtIntr.initialize() != 0)
@@ -23,46 +28,21 @@ int main()
 		return -1;
 	}
 	dtIntr.start();
+#endif
 
+#if EN_OTACLE_DETCT
 	// Start obstacle detection thread
 	ObstDetection obsDect(&dtIntr);
 	obsDect.start();
+#endif
 
+#if EN_NET_COMM
 	// Start remote monitoring thread
-/*
 	NetComm netComm(&dtIntr);
 	netComm.start();
-*/
+#endif
 
 	while(1);
 
-/*
-	// Test GPS sampling 
-	Sampler smplr;
-	double lat, lon, alt, azim, vel;
-
-	smplr.open_devices();	
-	
-	for(int i = 0; i < 3; i++)
-	{
-		smplr.get_gps_pav(&lat, &lon, &azim, &vel);
-
-		cout << "lat: " << lat
-			<< " lon: " << lon
-			<< " azim: " << azim
-			<< " vel: " << vel << endl;
-	}
-	cout << endl << endl;
-
-	for(int i = 0; i < 3; i++)
-	{
-		smplr.get_gps_3d_pos(&lat, &lon, &alt);
-
-		cout << "lat: " << lat
-			<< " lon: " << lon
-			<< " alt: " << alt << endl;
-	}
-*/
-	
 	return 0;
 }
